@@ -1,10 +1,18 @@
-from langchain.agents import create_agent
-from agents import llm_openrouter
+from langchain_core.prompts.chat import ChatPromptTemplate
+from agents import llm_openrouter, llm_google
 from prompts import SYSTEM_PROMPT
 
 
-def create_agents():
-    llm_primary = llm_openrouter()
-    agent = create_agent(model=llm_primary, tools=[], system_prompt=SYSTEM_PROMPT)
+def agent():
+    llm_primary = llm_google()
 
-    return agent
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", SYSTEM_PROMPT),
+            ("human", "context:\n{context}\n\nquestion:\n{question}"),
+        ]
+    )
+
+    chain = prompt | llm_primary
+    
+    return chain
